@@ -20,14 +20,14 @@ export class VaultService {
     }
   }
 
-  async updateVault({ userId, data }: UpdateVaultDto) {
+  async updateVault(data: UpdateVaultDto, userId: number) {
     try {
-      const update = await this.prismaService.vault.update({
+      const update = await this.prismaService.vault.updateMany({
         data: {
-          data,
+          ...data,
         },
         where: {
-          id: userId,
+          userId: userId,
         },
       });
       return update;
