@@ -10,22 +10,14 @@ export class UserController {
   constructor(private userLogic: UserLogic, private config: ConfigService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto, @Res() response: Response) {
-    // Setting the resposne for the route
-    // response.cookie('token', 'abdullah', {
-    //   domain: this.config.get('COOKIE_DOMAIN'),
-    //   path: '/',
-    //   secure: false,
-    //   httpOnly: true,
-    //   sameSite: false,
-    // });
-    return this.userLogic.createUser(createUserDto);
-  }
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @Res() response: Response,
+  ) {
+    const request = await this.userLogic.createUser(createUserDto);
 
-  @Post('/login')
-  login(@Body() loginPayload: LoginUserDto, @Res() response: Response) {
     // Setting the resposne for the route
-    response.cookie('token', 'abdullah', {
+    response.cookie('token', request.token.access_token, {
       domain: this.config.get('COOKIE_DOMAIN'),
       path: '/',
       secure: false,
@@ -33,6 +25,22 @@ export class UserController {
       sameSite: false,
     });
 
-    return this.userLogic.login(loginPayload);
+    return response.send(request);
+  }
+
+  @Post('/login')
+  async login(@Body() loginPayload: LoginUserDto, @Res() response: Response) {
+    const result = await this.userLogic.login(loginPayload);
+
+    // Setting the resposne for the route
+    response.cookie('token', result.token.access_token, {
+      domain: this.config.get('COOKIE_DOMAIN'),
+      path: '/',
+      secure: false,
+      httpOnly: true,
+      sameSite: false,
+    });
+
+    return response.send(result);
   }
 }
