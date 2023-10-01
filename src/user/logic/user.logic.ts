@@ -45,12 +45,12 @@ export class UserLogic {
         user.email,
       );
 
-      console.log('it is here');
-
       return {
         message: 'REGISTRATION_SUCCESS',
         status: true,
         data: user,
+        token: token,
+        salt,
       };
     } catch (error) {
       throw error;
